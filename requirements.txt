@@ -1,0 +1,5 @@
+scikit-learn>=0.21
+numpy
+tensorflow
+joblib
+scipy
