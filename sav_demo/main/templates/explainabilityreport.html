@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>EReport</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/simple-line-icons.css') }}">
+        <link href="https://fonts.cdnfonts.com/css/font" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/3804cb82d3.js" crossorigin="anonymous"></script>
+        <style>
+            .navbar {
+                background-color: #000000;
+            }
+            .navbar-logo {
+              display: flex;
+              align-items: center;
+              height: 30px;
+              width: auto;
+              max-width: 100%;
+            }
+            .navbar-nav > li {
+                display: flex;
+                align-items: center;
+            }
+            .navbar-form {
+                display: flex;
+                align-items: center;
+            }
+            .navbar-right {
+                margin-left: auto;
+            }
+            .dropdown-menu {
+                min-width: 150px;
+            }
+            .dropdown-menu > li > a {
+                padding: 5px 10px;
+            }
+            .navbar-default .navbar-nav > li > a {
+              color: #ffffff;
+              font-size: 18px;
+            }
+            .bold-border-btn {
+                font-weight: bold;
+                border-width: 0;
+                background-color: #1585B5;
+                color: #ffffff;
+                margin-left: 5px;
+            }
+            .input-long {
+                width: 350px;;
+            }
+            .app-footer {
+                background-color: black;
+                color: white;
+                text-align: center;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                height: 30px;
+                justify-content: center;
+                display: flex;
+                align-items: center;
+            }
+            .navbar-collapse .navbar-nav.navbar-right:last-child {
+                margin-right: 0px;
+                padding-right: 10px;
+            }
+            .section-header {
+                color: #3A99BA;
+            }
+            .textfont {
+                font-size:20px;
+            }
+            .accuracy-bar {
+                background-color: #ED7D31;
+                color: black;
+            }
+            .adequacy-bar {
+                background-color: #67C6A3;
+                color: black;
+            }
+            .header-style {
+                display: flex; 
+                align-items: stretch;
+            }
+            .toggle-style {
+                margin-top:20px;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            .icon-style {
+                background-color: white;
+                color: #3A99BA;
+                border-width: 0;
+                width: 26 px;
+                height: 26 px;
+            }
+            .result-table {
+                padding-right:10%;
+                margin-top:5px;
+                text-align: center;
+                vertical-align: middle;
+            }
+            .result-table th,
+            .result-table td {
+                text-align: center;
+                vertical-align: middle;
+            }
+            .result-table thead th {
+              background-color: #104B6A;
+              color: white;
+            }
+            .result-table tbody tr:nth-child(even) {
+              background-color: #50B6C5;
+            }
+
+            .result-table tbody tr:nth-child(odd) {
+              background-color: #67C6A3;
+            }
+            .remarks {
+                font-size: 18px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-default" style="margin-bottom: 0; border: 0;">
+            <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" style="padding:10px" href="{{ url_for('home') }}">
+                        <img src="{{ url_for('static', filename='background/logo_transparent.png') }}" alt="Company Logo" class="navbar-logo">
+                    </a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+{#                        <li><a href="{{ url_for('robustness') }}">Robustness</a></li>#}
+{#<!--                        <li><a href="{{ url_for('fairness') }}">Fairness</a></li>-->#}
+{#<!--                        <li><a href="{{ url_for('security') }}">Security</a></li>-->#}
+                        <li><a href="{{ url_for('explainability') }}" style="color: #ED7D31;">Explainability</a></li>
+                    </ul>
+                    <form class="navbar-form navbar-left">
+                        <div class="form-group">
+                            <input type="text" class="form-control input-long" id="inputid" placeholder="Robustness: Input cases, models or datasets">
+                        </div>
+                        <button type="button" class="btn btn-default bold-border-btn" id="search">Search</button>
+                    </form>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            {% if logged_in_username %}
+                            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    {{ logged_in_username }}
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#">Account Management</a></li>
+                                        <li><a href="#">Order Management</a></li>
+                                        <li><a href="/signout">Sign Out</a></li>
+                                    </ul>
+                                <span class="caret"></span>
+                            </a>
+                            {% else %}
+                                <a href='/signin'>Sign In</a>
+                            {% endif %}
+                            
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 d-flex align-items-center justify-content-center">
+                <div class="content text-center">
+                    <h1>Explainability Testing Report</h1>
+                    <h1>{{ case_id }}</h1>
+                </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h2 class="section-header">Summary</h2>
+                    <div>
+                        <p class="textfont"><strong>Model:</strong> {{ case[2][2:] }}</p>
+                        <p class="textfont"><strong>Dataset:</strong> {{ case[3][2:] }}</p>
+                        <p class="textfont"><strong>Config:</strong> {{ case[6] }}</p>
+                        <p class="textfont"><strong>Score:</strong> {{ case[9]|round(2) }} / 100</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- <h3>Radar Chart</h3> -->
+                    <h3></h3>
+                    <!-- Place your radar chart here -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class='header-style'>
+                        <div class="col-md-10 d-flex align-items-center" style="padding:0;">
+                            <h2 class="section-header">Explanation Model</h2>
+                        </div>
+                    </div>
+                    <div id="explanation-model">
+                        <div class="dimension-info">
+                            <div class="example-model" style="text-align: center">
+                                <div class="col-md-12">
+                                    <img src="{{ url_for('get_model') }}" width="100%" id="global-model" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <br>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+        <!-- footer -->
+        <footer class="app-footer" id="footer" role="footer">
+            <div class="wrapper b-t bg-light">
+                Copyright &copy; SMU SAV Group 2024-2024.All right reserved.
+            </div>
+        </footer>
+
+        <script src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script>
+            $(document).ready(function() {
+                $('.dropdown-toggle').dropdown();
+
+                $('#search').click(function() {
+                    var inputid = $('#inputid').val();
+
+                    var redirectUrl = '/home?inputid=' + inputid;
+                    window.location.href = redirectUrl;
+                });
+            });
+        </script>
+    </body>
+</html>

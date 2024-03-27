@@ -1,0 +1,63 @@
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+drop table users;
+
+insert into users (username, email, password) values ("python", "python@aidxtech.com", "123456");
+
+create table cases (
+	id INTEGER PRIMARY KEY, 
+	case_id TEXT UNIQUE NOT NULL, 
+	model_id TEXT NOT NULL, 
+	dataset_id TEXT NOT NULL,
+	username TEXT NOT NULL,
+	dimension TEXT NOT NULL, 
+	config TEXT NOT NULL, 
+	start_time TIMESTAMP, 
+	end_time TIMESTAMP, 
+	score FLOAT
+);
+
+drop table cases;
+
+insert into cases (case_id, model_id, dataset_id, username, dimension, config) values ("C_1", "M_1", "D_1", "python", "Robustness", "30%; FGSM; 0.3");
+insert into cases (case_id, model_id, dataset_id, username, dimension, config) values ("C_2", "M_1", "D_2", "python", "Fairness", "30%; 0.3");
+
+create table robustness (
+	id INTEGER PRIMARY KEY, 
+	case_id TEXT UNIQUE NOT NULL,
+	acc_original FLOAT,
+	nc FLOAT,
+	knc FLOAT,
+	tknc FLOAT,
+	total_summary TEXT
+);
+
+create table corruption (
+	id INTEGER PRIMARY KEY, 
+	case_id TEXT UNIQUE NOT NULL,
+	acc_gaussian FLOAT,
+	acac_gaussian FLOAT, 
+	ald2_gaussian FLOAT,
+	nte_gaussian FLOAT, 
+	corruption_score FLOAT,
+	corruption_summary TEXT
+);
+
+create table adversarial (
+	id INTEGER PRIMARY KEY, 
+	case_id TEXT UNIQUE NOT NULL,
+	acc_fgsm FLOAT,
+	acac_fgsm FLOAT, 
+	ald2_fgsm FLOAT,
+	nte_fgsm FLOAT, 
+	attack_score FLOAT,
+	adversarial_summary TEXT
+);
+
+drop table robustness;

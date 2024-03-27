@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/simple-line-icons.css') }}">
+        <link href="https://fonts.cdnfonts.com/css/font" rel="stylesheet">
+        <style>
+            .navbar {
+                background-color: #000000;
+            }
+            .navbar-logo {
+              display: flex;
+              align-items: center;
+              height: 30px;
+              width: auto;
+              max-width: 100%;
+            }
+            .navbar-nav > li {
+                display: flex;
+                align-items: center;
+            }
+            .navbar-form {
+                display: flex;
+                align-items: center;
+            }
+            .navbar-right {
+                margin-left: auto;
+            }
+            .dropdown-menu {
+                min-width: 150px;
+            }
+            .dropdown-menu > li > a {
+                padding: 5px 10px;
+            }
+            .navbar-default .navbar-nav > li > a {
+              color: #ffffff;
+              font-size: 18px;
+            }
+            .bold-border-btn {
+                font-weight: bold;
+                border-width: 0;
+                background-color: #1585B5;
+                color: #ffffff;
+                margin-left: 5px;
+            }
+            .input-long {
+                width: 350px;
+            }
+            .app-footer {
+                background-color: black;
+                color: white;
+                text-align: center;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                height: 30px;
+                justify-content: center;
+                display: flex;
+                align-items: center;
+            }
+            .navbar-collapse .navbar-nav.navbar-right:last-child {
+                margin-right: 0px;
+                padding-right: 10px;
+            }
+            #result-table {
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            #result-table th,
+            #result-table td {
+                text-align: center;
+                vertical-align: middle;
+            }
+            #result-table thead th {
+              background-color: #104B6A;
+              color: white;
+            }
+            #result-table tbody tr:nth-child(even) {
+              background-color: #50B6C5;
+            }
+
+            #result-table tbody tr:nth-child(odd) {
+              background-color: #67C6A3;
+            }
+            .filter-btn {
+                width: 100px; /* 自定义按钮宽度 */
+            }
+            .activated {
+                background-color: #1585B5;
+                color: #ffffff;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" style="padding:10px" href="{{ url_for('home') }}">
+                        <img src="{{ url_for('static', filename='background/logo_transparent.png') }}" alt="Company Logo" class="navbar-logo">
+                    </a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+{#                        <li><a href="{{ url_for('robustness') }}">Robustness</a></li>#}
+{#<!--                        <li><a href="{{ url_for('fairness') }}">Fairness</a></li>-->#}
+{#<!--                        <li><a href="{{ url_for('security') }}">Security</a></li>-->#}
+                        <li><a href="{{ url_for('explainability') }}">Explainability</a></li>
+                    </ul>
+                    <form class="navbar-form navbar-left">
+                        <div class="form-group">
+                            <input type="text" class="form-control input-long" id="inputid" placeholder="All: Input cases, models or datasets">
+                        </div>
+                        <button type="button" class="btn btn-default bold-border-btn" id="search">Search</button>
+                    </form>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            {% if logged_in_username %}
+                            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    {{ logged_in_username }}
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#">Account Management</a></li>
+                                        <li><a href="#">Order Management</a></li>
+                                        <li><a href="/signout">Sign Out</a></li>
+                                    </ul>
+                                <span class="caret"></span>
+                            </a>
+                            {% else %}
+                                <a href='/signin'>Sign In</a>
+                            {% endif %}
+                            
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 d-flex align-items-center justify-content-center">
+                    <div class="content text-center">
+                        <h1 id="welcome-heading">Welcome to SAV Demo</h1>
+                    </div>
+                    <div class="text-right" id="result-filter" style="display: none;">
+                        <div class="btn-group" role="group" aria-label="Status Filters">
+                            <button type="button" class="btn btn-default filter-btn activated" id="filter-all">All</button>
+                            <button type="button" class="btn btn-default filter-btn" id="filter-running">Running</button>
+                            <button type="button" class="btn btn-default filter-btn" id="filter-done">Done</button>
+                        </div>
+                    </div>
+                    <div class="content text-center">
+                        <h3 id="no-result" style="display: none;">No result found</h3>
+                    </div>
+                    <table id="result-table" class="table table-bordered" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Case</th>
+                                <th>Model</th>
+                                <th>Dataset</th>
+                                <th>Dimension</th>
+                                <th>Config</th>
+                                <th>StartTime</th>
+                                <th>EndTime</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- footer -->
+        <footer class="app-footer" id="footer" role="footer">
+            <div class="wrapper b-t bg-light">
+                Copyright &copy; SMU SAV Group. 2024-2024.All right reserved.
+            </div>
+        </footer>
+
+        <script src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script>
+            $(document).ready(function() {
+                var allCases = []; // 存放所有结果的数组
+                var runningCases = []; // 存放endTime为空的结果的数组
+                var doneCases = []; // 存放endTime不为空的结果的数组
+                function processCases(cases) {
+                    allCases = cases;
+                    runningCases = cases.filter(function(caseData) {
+                      return caseData[8] === null;
+                    });
+                    doneCases = cases.filter(function(caseData) {
+                      return caseData[8] !== null;
+                    });
+                }
+
+                var urlParams = new URLSearchParams(window.location.search);
+                var inputid = urlParams.get('inputid');
+
+                if (inputid) {
+                    search(inputid);
+                }
+
+                $('.dropdown-toggle').dropdown();
+
+                $('#search').click(function() {
+                    var inputid = $('#inputid').val();
+                    search(inputid);
+                });
+                function search(inputid) {
+                    $.ajax({
+                        url: '/home',
+                        type: 'POST',
+                        data: JSON.stringify({ inputid: inputid }),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            if (response.success)  {
+                                $('#filter-all').addClass('activated').siblings().removeClass('activated');
+                                $('#result-filter').hide();
+                                processCases(response.cases)
+                                populateTable(response.cases);
+                            } else {
+                                $('#result-table').hide();
+                                $('#no-result').hide();
+                            }
+                        }, 
+                        error: function(xhr, status, error) {
+                            console.log('Error:', error);
+                        }
+                    });
+                }
+                function populateTable(cases) {
+                    var tableBody = $('#result-table tbody');
+                    tableBody.empty(); // 清空表格内容
+                    if (cases && cases.length > 0) {
+                        for (var i = 0; i < cases.length; i++) {
+                            var caseData = cases[i];
+                            var row = $('<tr>');
+
+                            // 创建单元格并设置文本内容
+                            var caseCell = $('<td>').append($('<a style="color:#ED7D31">').attr('href', '/report?caseId=' + caseData[1]).text(caseData[1]));
+
+                            var modelCell = $('<td>').text(caseData[2]);
+                            var datasetCell = $('<td>').text(caseData[3]);
+                            var dimensionCell = $('<td>').text(caseData[5]);
+                            var configCell = $('<td>').text(caseData[6]);
+                            var startTimeCell = $('<td>').text(caseData[7]);
+                            var endTimeCell = $('<td>').text(caseData[8] != null ? caseData[8] : '');
+                            // var endTimeCell = $('<td>').text(caseData[8]);
+                            var scoreCell = $('<td>').text(caseData[9] != null ? caseData[9].toFixed(2) : '');
+                            // var qualityCell = $('<td>').text(caseData[10]);
+
+                            // 将单元格添加到行中
+                            row.append(caseCell, modelCell, datasetCell, dimensionCell, configCell, startTimeCell, endTimeCell, scoreCell);
+
+                            // 将行添加到表格主体中
+                            tableBody.append(row);
+                        }
+                        $('#result-filter').show();
+                        $('#result-table').show();
+                        $('#no-result').hide();
+                    } else {
+                        // 如果没有结果，则隐藏表格
+                        $('#result-table').hide();
+                        $('#no-result').show();
+                    }
+                }
+                $('#filter-all').click(function() {
+                    populateTable(allCases);
+                    $(this).addClass('activated').siblings().removeClass('activated');
+                });
+
+                // 点击"Running"按钮显示endTime为空的结果
+                $('#filter-running').click(function() {
+                    populateTable(runningCases);
+                    $(this).addClass('activated').siblings().removeClass('activated');
+                });
+
+                // 点击"Done"按钮显示endTime不为空的结果
+                $('#filter-done').click(function() {
+                    populateTable(doneCases);
+                    $(this).addClass('activated').siblings().removeClass('activated');
+                });
+            });
+        </script>
+    </body>
+</html>

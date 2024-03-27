@@ -1,0 +1,113 @@
+<!-- signin.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SAV Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/coming-sssoon-demo.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/coming-sssoon.css') }}">
+    <style>
+        .centered {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translate(-50%);
+            text-align: center;
+        }
+        .logo {
+            width: 400px; /* Adjust the size as needed */
+        }
+        .input-wrapper {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .bold-border-btn {
+            font-weight: bold;
+            border-width: 0;
+            background-color: #1585B5;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body style="background-image: url({{ url_for('static', filename='background/default.jpg') }}); background-size: cover;">
+    <div class="centered">
+        <img src="{{ url_for('static', filename='background/logo_transparent.png') }}" alt="Company Logo" class="logo">
+        <h2>Sign up to SAV Demo</h2>
+
+        <div id="error-alert" class="alert alert-danger" style="display: none;">
+            <span id="error-message">{{ error }}</span>
+            <button id="close-btn" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="input-wrapper" style="background-color: rgba(248, 249, 250, 0.5);">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control">
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" class="form-control">
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="At least 10 characters">
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary btn-block bold-border-btn" id="signup">Create Account</button>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#signup').click(function() {
+                // 获取输入文本
+                var username = $('#username').val();
+                var email = $('#email').val();
+                var password = $('#password').val();
+
+                // 执行预测
+                signup(username, email, password);
+            });
+            function signup(username, email, password) {
+                $.ajax({
+                    url: '/signup',
+                    type: 'POST',
+                    data: JSON.stringify({ username: username, password: password, email: email }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.href = '/signin';
+                        } else {
+                            $('#error-alert').show();
+                            $('#error-message').html('Invalid username, email or password.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error:', error);
+                    }
+                });
+            }
+            $('#close-btn').click(function(){
+                $('#error-alert').hide();
+            });
+        });
+    </script>
+</body>
+</html>

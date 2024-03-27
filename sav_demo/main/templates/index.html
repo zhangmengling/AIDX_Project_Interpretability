@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SAC Demo</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/coming-sssoon.css') }}">
+    <style>
+        .centered {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bold-border-btn {
+            font-weight: bold;
+            border-width: 0;
+            background-color: #1585B5;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body style="background-image: url({{ url_for('static', filename='background/default.jpg') }}); background-size: cover;">
+    <div class="centered">
+        <img src="{{ url_for('static', filename='background/logo_transparent.png') }}" alt="Company Logo">
+        <br><br>
+        <div class="row">
+            <div class="col-md-6">
+                <a class="btn btn-primary btn-block bold-border-btn" href="{{ url_for('signin') }}">Sign In</a>
+            </div>
+            <div class="col-md-6">
+                <a class="btn btn-primary btn-block bold-border-btn" href="{{ url_for('signup') }}">Sign Up</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</body>
+</html>
